@@ -5,10 +5,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 from PIL import Image
 from django_countries.fields import CountryField
 from django.core.validators import MinLengthValidator
+import random
 
 # custom imports
 from apps.common.models import HelperModel
-from .utils import generate_account_no
+
 
 User = get_user_model()
 
@@ -26,14 +27,13 @@ class Profile(HelperModel):
 
     account_no = models.CharField(
         max_length=20, unique=True,
-        editable=False, default=generate_account_no())
+        editable=False, default='generate_account_no()')
 
     account_balance = models.DecimalField(
-        decimal_places=2, verbose_name=_("Account balance"), default=0.00)
+        decimal_places=2, max_digits=100, verbose_name=_("Account balance"), default=0.00)
 
-    transfer_pin = models.SmallIntegerField(
-        validators=[MinLengthValidator(limit_value=4, message="Pin must be between 4 to 6 digits")],
-        max_length=6, default=000000)
+    transfer_pin = models.IntegerField(
+        validators=[MinLengthValidator(limit_value=4, message="Pin must be between 4 to 6 digits")], default=000000)
 
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"), max_length=30, blank=True, null=True)
@@ -49,9 +49,8 @@ class Profile(HelperModel):
 
     city = models.CharField(
         verbose_name=_("City"),
-        max_length=180,
-        blank=True,
-        null=True,
+        max_length=100,
+        default=''
     )
 
     address = models.TextField(max_length=255, verbose_name=_("Your Address"),
@@ -69,3 +68,12 @@ class Profile(HelperModel):
             img_dimensions = (300, 300)
             img.thumbnail(img_dimensions)
             img.save(self.profile_photo.path)
+
+
+def generate_account_no():
+    num = str(random.randint(100000000, 999999999))
+
+    if Profile.objects.get(account_no=num).exists():
+        generate_account_no()
+    else:
+        return num
