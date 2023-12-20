@@ -10,3 +10,7 @@ class HelperModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class AllAcountNumbers(models.Model):
+    account_no = models.CharField(max_length=255, unique=True)

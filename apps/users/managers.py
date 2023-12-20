@@ -12,9 +12,7 @@ class CustomUserManager(BaseUserManager):
         except ValidationError:
             ValueError("Email address is not valid")
 
-    def create_user(
-            self, email, username,
-            first_name, last_name, password, **extra_fields):
+    def create_user(self, email, username, first_name, last_name, password, **extra_fields):
         if not email:
             raise ValueError(_("Users must have an email address"))
 
@@ -27,23 +25,19 @@ class CustomUserManager(BaseUserManager):
         if not last_name:
             raise ValueError(_("Users must submit a last name"))
 
-        middle_name = extra_fields.get("middle_name", None)
+        middle_name = extra_fields.get("middle_name", '')
 
         self.email_validator(email)
 
-        user = self.model(
-            email=email, username=username, middle_name=middle_name,
-            first_name=first_name, last_name=last_name
-        )
+        user = self.model(email=email, username=username, middle_name=middle_name,
+                          first_name=first_name, last_name=last_name)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username,
-                         first_name, last_name, password):
+    def create_superuser(self, email, username, first_name, last_name, password):
 
-        user = self.create_user(email, username,
-                                first_name, last_name, password)
+        user = self.create_user(email, username, first_name, last_name, password)
 
         user.is_admin = True
         user.is_verified = True
