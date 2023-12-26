@@ -10,6 +10,7 @@ from django.contrib.auth.tokens import default_token_generator
 # custom
 from .utils import send_verify_email_otp, create_jwt_pair_for_user, send_password_reset_otp
 from .models import User, OTPForUser
+from apps.bank_profiles.utils import send_update_profile_email
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -145,6 +146,9 @@ class ActivateSerializer(serializers.Serializer):
 
             user.is_verified = True
             user.save()
+
+            send_update_profile_email(user.email)
+
         return super().validate(attrs)
 
 

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from apps.common.views import GenerateNewAccountNo
+# from apps.common.views import GenerateNewAccountNo
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -32,13 +32,17 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
 
     # auth
-    path('api/v1/', include('apps.users.urls')),
+    path('api/v1/auth/', include('apps.users.urls')),
+
+    # banking
+    path('api/v1/banking/', include('apps.bank_profiles.urls')),
+
+    # transfers
+    path('api/v1/transfer/', include('apps.transactions.urls')),
 
     # admin
     path("admin/", admin.site.urls),
 
-    # custom generate acct_no
-    path('generate/', GenerateNewAccountNo.as_view(), name='generate_account_no'),
 
 ]
 

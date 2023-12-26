@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import Profile
 
 
 User = get_user_model()
@@ -69,4 +68,3 @@ class UserAdmin(DefaultUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Profile)

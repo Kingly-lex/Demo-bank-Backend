@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from .models import Profile
+from apps.bank_profiles.models import Profile
 from apps.users.models import User
 from django.db.models.signals import post_save
 

@@ -6,23 +6,23 @@ from .views import (RegisterView, LoginView, LogoutView, Request_new_verificatio
 
 
 urlpatterns = [
-    path('auth/register', RegisterView.as_view(), name='register'),
+    path('register', RegisterView.as_view(), name='register'),
 
-    path('auth/activate', ActivateAccount.as_view(), name='activate'),
+    path('activate', ActivateAccount.as_view(), name='activate'),
 
-    path('auth/login', LoginView.as_view(), name='login'),
+    path('login', LoginView.as_view(), name='login'),
 
-    path('auth/change_password', ChangePassword.as_view(), name='change_password'),
+    path('change_password', ChangePassword.as_view(), name='change_password'),
 
-    path('auth/logout', LogoutView.as_view(), name='logout'),
+    path('logout', LogoutView.as_view(), name='logout'),
 
-    path('auth/request_new_verification_email',
+    path('request_new_verification_email',
          Request_new_verification_email.as_view(), name='request_new_verification_email'),
 
-    path('auth/forgot_password', ForgotPassword.as_view(), name='forgot_password'),
+    path('forgot_password', ForgotPassword.as_view(), name='forgot_password'),
 
-    path('auth/reset_confirm/<uidb64>/<token>', PasswordResetConfirmWeb.as_view(), name='reset_confirm'),
+    path('reset_confirm/<uidb64>/<token>', PasswordResetConfirmWeb.as_view(), name='reset_confirm'),
 
-    path('auth/set_password', SetNewPassword.as_view(),
+    path('set_password', SetNewPassword.as_view(),
          name='set_password'),
 ]
