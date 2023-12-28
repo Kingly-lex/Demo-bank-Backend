@@ -35,17 +35,24 @@ class VerificationMethod(models.TextChoices):
     PASSPORT = "PASSPORT", _("PASSPORT")
 
 
+class MaritalStatus(models.TextChoices):
+    Married = 'Married', _("Married")
+    Divorced = "Divorced", _("Divorced")
+    widowed = 'Widowed', _("Widowed")
+    Seperated = 'Seperated', ('Seperated')
+    Single = 'Single', _("Single")
+
+
 class Profile(HelperModel):
 
-    user = models.OneToOneField(
-        User, related_name="profile", on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
 
     account_no = models.TextField(max_length=20, unique=True, null=True, blank=True)
 
-    account_balance = models.DecimalField(decimal_places=2, max_digits=100,
+    account_balance = models.DecimalField(decimal_places=2, max_digits=10,
                                           verbose_name=_("Account balance"), default=0.00)
 
-    transfer_pin = models.TextField(validators=[MinLengthValidator(4)], max_length=4, default='1234')
+    transfer_pin = models.TextField(validators=[MinLengthValidator(4)], max_length=255, default='1234')
 
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"), region='NG', help_text=_("Eg: +234758849930"), max_length=30, null=True)
@@ -68,8 +75,13 @@ class Profile(HelperModel):
 
     is_updated = models.BooleanField(default=False)
 
+    next_of_kin = models.ForeignKey('NextOfKin', related_name="benefactor",
+                                    on_delete=models.CASCADE, null=True, blank=True)
+
+    marital_status = models.TextField(choices=MaritalStatus.choices, max_length=50, default=MaritalStatus.Single)
+
     def __str__(self):
-        return f"{self.user}'s Profile"
+        return f"{self.user.full_name}'s Profile"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -83,3 +95,33 @@ class Profile(HelperModel):
 
         # # pin secure
         # self.transfer_pin = generate_password_hash(self.transfer_pin, method="pbkdf2:sha256", salt_length=16)
+
+
+class NextOfKin(HelperModel):
+
+    email = models.EmailField(max_length=100, unique=True, verbose_name=_("Email Address"))
+
+    first_name = models.CharField(verbose_name=_("First Name"), max_length=50)
+
+    last_name = models.CharField(verbose_name=_("Last Name"), max_length=50)
+
+    middle_name = models.CharField(verbose_name=_("Middle Name"), max_length=50, null=True, blank=True)
+
+    phone_number = PhoneNumberField(
+        verbose_name=_("Phone Number"), region='NG', help_text=_("Eg: +234758849930"), max_length=30)
+
+    profile_photo = models.ImageField(verbose_name=_("Profile Photo"), default="default.jpg", upload_to="Next_of_kin")
+
+    gender = models.TextField(choices=Gender.choices, default=Gender.OTHER, max_length=10)
+
+    country = CountryField(verbose_name=_("Country"), default="NG")
+
+    city = models.TextField(verbose_name=_("City"), max_length=100)
+
+    address = models.TextField(max_length=255, verbose_name=_("Your Address"))
+
+    def __str__(self):
+        if self.middle_name is not None and self.middle_name != '':
+            return f"{self.first_name} {self.middle_name} {self.last_name}"
+
+        return f"{self.first_name} {self.last_name}"

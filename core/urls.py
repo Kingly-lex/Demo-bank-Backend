@@ -38,7 +38,7 @@ urlpatterns = [
     path('api/v1/banking/', include('apps.bank_profiles.urls')),
 
     # transfers
-    path('api/v1/transfer/', include('apps.transactions.urls')),
+    path('api/v1/transactions/', include('apps.transactions.urls')),
 
     # admin
     path("admin/", admin.site.urls),

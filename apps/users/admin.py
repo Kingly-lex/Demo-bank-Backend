@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
+from apps.bank_profiles.models import Profile as P, NextOfKin as K
 
 
 User = get_user_model()
@@ -67,4 +68,16 @@ class UserAdmin(DefaultUserAdmin):
     search_fields = ["email", "username", "first_name", "last_name"]
 
 
+class Profile(P):
+    class Meta:
+        proxy = True
+
+
+class NextOfKin(K):
+    class Meta:
+        proxy = True
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Profile)
+admin.site.register(NextOfKin)

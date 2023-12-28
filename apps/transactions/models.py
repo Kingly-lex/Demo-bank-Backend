@@ -4,37 +4,32 @@ from django.utils.translation import gettext_lazy as _
 # local
 from apps.common.models import HelperModel
 from apps.bank_profiles.models import Profile
-from apps.users.models import User
 
 
-class TransferType(models.TextChoices):
-    TRANSFER = "Transfer", _("Transfer")
-    WITHDRAWAL = "Withdrawal", _("Withdrawal")
-    DEPOSIT = "Deposit", _("Deposit")
+class Type(models.TextChoices):
+    Transfer = "Transfer", _("Transfer")
+    Withdrawal = "Withdrawal", _("Withdrawal")
+    Deposit = "Deposit", _("Deposit")
 
 
 class Transaction(HelperModel):
-    sender = models.ForeignKey(Profile, related_name="outgoing", on_delete=models.DO_NOTHING, null=True, blank=True)
+    sender = models.TextField(max_length=20, verbose_name=_("Sender Account Number"))
 
-    to_account = models.TextField(max_length=20, verbose_name=_("Receiver Account Number"))
-
-    type = models.CharField(max_length=20, choices=TransferType.choices, default=TransferType.TRANSFER)
+    receiver = models.TextField(max_length=20, verbose_name=_("Receiver Account Number"))
 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
-    charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.80)
+    type = models.TextField(max_length=20, choices=Type.choices, default=Type.Transfer)
 
-    processed_by = models.ForeignKey(User, related_name='banker', help_text=_(
-        "Staff who proccessed Withdrawal or deposit"), on_delete=models.DO_NOTHING, null=True, blank=True)
+    processed_by = models.TextField(max_length=100, verbose_name=_("Banker id"), default='Auto-transfer')
+
+    charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     description = models.TextField(max_length=200, blank=True, null=True)
 
-    is_completed = models.BooleanField(default=False)
+    is_successful = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.type}, Amount: ${self.amount} on {self.created_at.strftime('%B %d, %Y')}"
-
-
-class BankChargeRevenue(HelperModel):
-    source = models.ForeignKey(Transaction, related_name="bank_revenue", on_delete=models.DO_NOTHING)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+        r_profile = Profile.objects.get(account_no=self.receiver)
+        date = self.created_at.strftime('%B %d, %Y %I:%M:%S %p')
+        return f"Type: {self.type}, Destination:{r_profile.user.full_name} Amount: ${self.amount} on {date}"
